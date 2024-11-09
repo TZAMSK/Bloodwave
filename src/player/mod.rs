@@ -27,6 +27,12 @@ impl Plugin for PlayerPlugin {
                     .before(confine_player_movement)
                     .in_set(MovementSystemSet),
             )
+            .add_systems(
+                Update,
+                player_rotate
+                    .before(confine_player_movement)
+                    .in_set(MovementSystemSet),
+            )
             .add_systems(Update, confine_player_movement.in_set(ConfinedSystemSet));
     }
 }

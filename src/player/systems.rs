@@ -1,7 +1,7 @@
+use super::components::*;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
-
-use super::components::*;
+use std::f32::consts::FRAC_PI_2;
 
 pub const PLAYER_SPEED: f32 = 500.0;
 pub const PLAYER_SIZE: f32 = 64.0;
@@ -48,6 +48,25 @@ pub fn player_movement(
         }
 
         transform.translation += direction * PLAYER_SPEED * time.delta_seconds();
+    }
+}
+
+pub fn player_rotate(
+    window_query: Query<&Window, With<PrimaryWindow>>,
+    mut player_query: Query<&mut Transform, With<Player>>,
+) {
+    let window = window_query.get_single().unwrap();
+
+    if let Ok(mut transform) = player_query.get_single_mut() {
+        if let Some(cursor_position) = window.cursor_position() {
+            let player_position = transform.translation;
+
+            let mouse_target = Vec3::new(cursor_position.x, cursor_position.y, 0.0) - FRAC_PI_2;
+
+            let direction = mouse_target - player_position;
+            let angle = direction.y.atan2(direction.x);
+            transform.rotation = Quat::from_rotation_z(angle);
+        }
     }
 }
 
