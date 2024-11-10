@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::player::components::Player;
 
-const CAM_LERP_FACTOR: f32 = 2.0;
+const CAM_LERP_FACTOR: f32 = 8.0;
 
 pub fn camera_spawn(mut commands: Commands) {
     commands.spawn(Camera2dBundle { ..default() });
