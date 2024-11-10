@@ -1,8 +1,6 @@
 use super::components::*;
 use bevy::prelude::*;
-use bevy::render::camera;
 use bevy::window::PrimaryWindow;
-use std::f32::consts::FRAC_PI_2;
 
 pub const PLAYER_SPEED: f32 = 500.0;
 
