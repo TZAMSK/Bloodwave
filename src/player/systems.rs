@@ -1,5 +1,6 @@
 use super::components::*;
 use bevy::prelude::*;
+use bevy::render::camera;
 use bevy::window::PrimaryWindow;
 use std::f32::consts::FRAC_PI_2;
 
@@ -46,6 +47,10 @@ pub fn player_movement(
             direction += Vec3::new(0.0, -1.0, 0.0)
         }
 
+        if direction.length() > 0.0 {
+            direction = direction.normalize();
+        }
+
         transform.translation += direction * PLAYER_SPEED * time.delta_seconds();
     }
 }
@@ -53,18 +58,25 @@ pub fn player_movement(
 pub fn player_rotate(
     window_query: Query<&Window, With<PrimaryWindow>>,
     mut player_query: Query<&mut Transform, With<Player>>,
+    camera_query: Query<(&GlobalTransform, &Camera), With<Camera>>,
 ) {
     let window = window_query.get_single().unwrap();
 
+    let (camera_transform, camera) = camera_query.get_single().unwrap();
+
     if let Ok(mut transform) = player_query.get_single_mut() {
         if let Some(cursor_position) = window.cursor_position() {
-            let player_position = transform.translation;
+            if let Some(world_position) =
+                camera.viewport_to_world(camera_transform, cursor_position)
+            {
+                let player_position = transform.translation;
 
-            let mouse_target = Vec3::new(cursor_position.x, cursor_position.y, 0.0) - FRAC_PI_2;
+                let direction = world_position.origin - player_position;
 
-            let direction = mouse_target - player_position;
-            let angle = direction.y.atan2(direction.x);
-            transform.rotation = Quat::from_rotation_z(angle);
+                let angle = direction.y.atan2(direction.x);
+
+                transform.rotation = Quat::from_rotation_z(angle);
+            }
         }
     }
 }
