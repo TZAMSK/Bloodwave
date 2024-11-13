@@ -2,8 +2,8 @@ use super::components::*;
 use crate::player::components::Player;
 use bevy::prelude::*;
 
-const TIME_BETWEEN_SHOTS: f32 = 0.2;
-const BULLET_SPEED: f32 = 1000.0;
+const TIME_BETWEEN_SHOTS: f32 = 0.12;
+const BULLET_SPEED: f32 = 2000.0;
 
 #[derive(Resource)]
 pub struct ShootTimer(Timer);
