@@ -2,8 +2,6 @@ use super::components::*;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
-pub const PLAYER_SPEED: f32 = 500.0;
-
 pub fn spawn_player(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
@@ -17,16 +15,16 @@ pub fn spawn_player(
             texture: asset_server.load("sprites/survivor.png"),
             ..default()
         },
-        Player {},
+        Player { ..default() },
     ));
 }
 
 pub fn player_movement(
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut player_query: Query<&mut Transform, With<Player>>,
+    mut player_query: Query<(&Player, &mut Transform), With<Player>>,
     time: Res<Time>,
 ) {
-    if let Ok(mut transform) = player_query.get_single_mut() {
+    if let Ok((player, mut player_transform)) = player_query.get_single_mut() {
         let mut direction = Vec3::ZERO;
 
         if keyboard_input.pressed(KeyCode::ArrowLeft) || keyboard_input.pressed(KeyCode::KeyA) {
@@ -49,7 +47,7 @@ pub fn player_movement(
             direction = direction.normalize();
         }
 
-        transform.translation += direction * PLAYER_SPEED * time.delta_seconds();
+        player_transform.translation += direction * player.speed * time.delta_seconds();
     }
 }
 

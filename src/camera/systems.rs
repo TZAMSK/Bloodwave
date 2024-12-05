@@ -2,18 +2,18 @@ use bevy::prelude::*;
 
 use crate::player::components::Player;
 
-const CAM_LERP_FACTOR: f32 = 8.0;
+use super::components::MyCamera;
 
 pub fn camera_spawn(mut commands: Commands) {
-    commands.spawn(Camera2dBundle { ..default() });
+    commands.spawn((Camera2dBundle { ..default() }, MyCamera { ..default() }));
 }
 
 pub fn update_camera(
-    mut camera: Query<&mut Transform, (With<Camera2d>, Without<Player>)>,
+    mut camera: Query<(&MyCamera, &mut Transform), (With<Camera2d>, Without<Player>)>,
     player: Query<&Transform, (With<Player>, Without<Camera2d>)>,
     time: Res<Time>,
 ) {
-    let Ok(mut camera) = camera.get_single_mut() else {
+    let Ok((camera, mut camera_transform)) = camera.get_single_mut() else {
         return;
     };
 
@@ -22,9 +22,9 @@ pub fn update_camera(
     };
 
     let Vec3 { x, y, .. } = player.translation;
-    let direction = Vec3::new(x, y, camera.translation.z);
+    let direction = Vec3::new(x, y, camera_transform.translation.z);
 
-    camera.translation = camera
+    camera_transform.translation = camera_transform
         .translation
-        .lerp(direction, time.delta_seconds() * CAM_LERP_FACTOR)
+        .lerp(direction, time.delta_seconds() * camera.lerp_factor)
 }

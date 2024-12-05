@@ -1,9 +1,10 @@
 use super::components::*;
+use crate::enemy::components::Enemy;
 use crate::player::components::Player;
 use bevy::prelude::*;
 
 const TIME_BETWEEN_SHOTS: f32 = 0.12;
-const BULLET_SPEED: f32 = 2000.0;
+const ENEMY_SIZE: f32 = 16.0;
 
 #[derive(Resource)]
 pub struct ShootTimer(Timer);
@@ -40,16 +41,39 @@ pub fn bullet_spawn(
                     texture: asset_server.load("sprites/bullet.png"),
                     ..default()
                 },
-                Bullet {},
+                Bullet { ..default() },
             ));
         }
     }
 }
 
-pub fn bullet_movement(mut bullet_query: Query<&mut Transform, With<Bullet>>, time: Res<Time>) {
-    for mut bullet in bullet_query.iter_mut() {
-        let direction = bullet.rotation.mul_vec3(Vec3::X);
+pub fn bullet_movement(
+    mut bullet_query: Query<(&Bullet, &mut Transform), With<Bullet>>,
+    time: Res<Time>,
+) {
+    for (bullet, mut bullet_transform) in bullet_query.iter_mut() {
+        let direction = bullet_transform.rotation.mul_vec3(Vec3::X);
 
-        bullet.translation += direction.normalize() * BULLET_SPEED * time.delta_seconds();
+        bullet_transform.translation += direction.normalize() * bullet.speed * time.delta_seconds();
+    }
+}
+
+pub fn bullet_hit_enemy(
+    mut commands: Commands,
+    bullet_query: Query<(&Bullet, Entity, &Transform), With<Bullet>>,
+    enemy_query: Query<(Entity, &Transform), With<Enemy>>,
+) {
+    for (bullet, bullet_entity, bullet_transform) in bullet_query.iter() {
+        for (enemy_entity, enemy_transform) in enemy_query.iter() {
+            let distance = bullet_transform
+                .translation
+                .distance(enemy_transform.translation);
+            let bullet_radius = bullet.size / 2.0;
+            let enemy_radius = ENEMY_SIZE / 2.0;
+            if distance < bullet_radius + enemy_radius {
+                commands.entity(bullet_entity).despawn();
+                commands.entity(enemy_entity).despawn();
+            }
+        }
     }
 }

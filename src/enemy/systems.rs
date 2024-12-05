@@ -5,8 +5,6 @@ use super::components::*;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
-const ENEMY_SPEED: f32 = 500.0;
-const DISTANCE_ENEMY_PLAYER: f32 = 400.0;
 const NUMBER_ENEMIES: u32 = 4;
 
 pub fn spawn_enemy(
@@ -33,7 +31,7 @@ pub fn spawn_enemy(
                 texture: asset_server.load("sprites/hitman.png"),
                 ..default()
             },
-            Enemy {},
+            Enemy { ..default() },
         ));
 
         i += 1;
@@ -42,11 +40,11 @@ pub fn spawn_enemy(
 
 pub fn enemy_movement(
     player_query: Query<&mut Transform, (With<Player>, Without<Enemy>)>,
-    mut enemy_query: Query<(&mut Transform, &Enemy)>,
+    mut enemy_query: Query<(&Enemy, &mut Transform)>,
     time: Res<Time>,
 ) {
     if let Some(player) = player_query.iter().next() {
-        for (mut transform_enemy, enemy) in enemy_query.iter_mut() {
+        for (enemy, mut transform_enemy) in enemy_query.iter_mut() {
             let mut enemy_position = transform_enemy.translation;
             let player_position = player.translation;
             let direction = player_position.distance(enemy_position);
@@ -54,9 +52,9 @@ pub fn enemy_movement(
             let distance = player_position - enemy_position;
 
             let angle = distance.y.atan2(distance.x);
-            if direction <= DISTANCE_ENEMY_PLAYER {
+            if direction <= enemy.aggro_range {
                 transform_enemy.rotation = Quat::from_rotation_z(angle);
-                enemy_position += distance.normalize() * ENEMY_SPEED * time.delta_seconds();
+                enemy_position += distance.normalize() * enemy.speed * time.delta_seconds();
             }
         }
     }
