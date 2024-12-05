@@ -1,4 +1,7 @@
 use super::components::*;
+use crate::enemy::components::XP;
+use bevy::ecs::query::QueryManyIter;
+use bevy::math::NormedVectorSpace;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
@@ -72,6 +75,42 @@ pub fn player_rotate(
                 let angle = direction.y.atan2(direction.x);
 
                 transform.rotation = Quat::from_rotation_z(angle);
+            }
+        }
+    }
+}
+
+pub fn pick_up_xp(
+    mut commands: Commands,
+    mut xp_query: Query<(&XP, Entity, &mut Transform), (With<XP>, Without<Player>)>,
+    player_query: Query<(&mut Player, &Transform), (With<Player>, Without<XP>)>,
+    time: Res<Time>,
+) {
+    if let Ok((player, player_transform)) = player_query.get_single() {
+        let player_position = player_transform.translation;
+
+        for (xp, xp_entity, mut xp_transform) in xp_query.iter_mut() {
+            let mut xp_position = xp_transform.translation;
+            let distance = player_position - xp_position;
+            let distance_length = distance.length();
+            let xp_radius = xp.distance_pick_up / 2.0;
+            let player_radius = player.size / 2.0;
+
+            if distance_length < xp_radius + player_radius {
+                let angle_to_player = distance.y.atan2(distance.x);
+                let rotation_offset = (time.elapsed_seconds() * xp.speed).sin();
+                let curved_angle = angle_to_player + rotation_offset;
+                let movement_direction = Vec3::new(curved_angle.cos(), curved_angle.sin(), 0.0);
+
+                xp_position += movement_direction * xp.speed * time.delta_seconds();
+                xp_transform.rotation = Quat::from_rotation_z(curved_angle);
+                xp_transform.translation = xp_position;
+            }
+
+            let destroy_proximity = player_position.distance(xp_position);
+
+            if destroy_proximity < 1.0 {
+                commands.entity(xp_entity).despawn();
             }
         }
     }
