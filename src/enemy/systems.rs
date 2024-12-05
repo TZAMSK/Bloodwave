@@ -55,6 +55,7 @@ pub fn enemy_movement(
             if direction <= enemy.aggro_range {
                 transform_enemy.rotation = Quat::from_rotation_z(angle);
                 enemy_position += distance.normalize() * enemy.speed * time.delta_seconds();
+                transform_enemy.translation = enemy_position
             }
         }
     }
