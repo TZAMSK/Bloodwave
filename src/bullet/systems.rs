@@ -1,7 +1,8 @@
 use super::components::*;
-use crate::enemy::components::Enemy;
+use crate::enemy::components::{Enemy, XP};
 use crate::player::components::Player;
 use bevy::prelude::*;
+use rand::Rng;
 
 const TIME_BETWEEN_SHOTS: f32 = 0.12;
 const ENEMY_SIZE: f32 = 16.0;
@@ -61,18 +62,40 @@ pub fn bullet_movement(
 pub fn bullet_hit_enemy(
     mut commands: Commands,
     bullet_query: Query<(&Bullet, Entity, &Transform), With<Bullet>>,
-    enemy_query: Query<(Entity, &Transform), With<Enemy>>,
+    enemy_query: Query<(&Enemy, Entity, &Transform), With<Enemy>>,
+    asset_server: Res<AssetServer>,
 ) {
+    let mut rng = rand::thread_rng();
+
     for (bullet, bullet_entity, bullet_transform) in bullet_query.iter() {
-        for (enemy_entity, enemy_transform) in enemy_query.iter() {
+        for (enemy, enemy_entity, enemy_transform) in enemy_query.iter() {
             let distance = bullet_transform
                 .translation
                 .distance(enemy_transform.translation);
             let bullet_radius = bullet.size / 2.0;
             let enemy_radius = ENEMY_SIZE / 2.0;
             if distance < bullet_radius + enemy_radius {
+                let spawn_y: f32 = rng.gen_range(-40.0..40.0);
+                let spawn_x: f32 = rng.gen_range(-40.0..40.0);
+                let chance: f32 = rng.gen_range(0.0..1.0);
+
                 commands.entity(bullet_entity).despawn();
                 commands.entity(enemy_entity).despawn();
+
+                if chance <= enemy.xp.drop_chance {
+                    commands.spawn((
+                        SpriteBundle {
+                            transform: Transform::from_xyz(
+                                enemy_transform.translation.x + spawn_x,
+                                enemy_transform.translation.y + spawn_y,
+                                1.0,
+                            ),
+                            texture: asset_server.load("sprites/xp.png"),
+                            ..default()
+                        },
+                        XP { ..default() },
+                    ));
+                }
             }
         }
     }
