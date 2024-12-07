@@ -6,6 +6,7 @@ pub struct Enemy {
     pub aggro_range: f32,
     pub xp: XP,
     pub level: u32,
+    pub size: f32,
 }
 
 #[derive(Component)]
@@ -23,6 +24,7 @@ impl Default for Enemy {
             aggro_range: 400.0,
             xp: XP::default(),
             level: 1,
+            size: 50.0,
         }
     }
 }
