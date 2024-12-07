@@ -5,7 +5,6 @@ use bevy::prelude::*;
 use rand::Rng;
 
 const TIME_BETWEEN_SHOTS: f32 = 0.12;
-const ENEMY_SIZE: f32 = 16.0;
 
 #[derive(Resource)]
 pub struct ShootTimer(Timer);
@@ -73,7 +72,7 @@ pub fn bullet_hit_enemy(
                 .translation
                 .distance(enemy_transform.translation);
             let bullet_radius = bullet.size / 2.0;
-            let enemy_radius = ENEMY_SIZE / 2.0;
+            let enemy_radius = enemy.size / 2.0;
             if distance < bullet_radius + enemy_radius {
                 let spawn_y: f32 = rng.gen_range(-40.0..40.0);
                 let spawn_x: f32 = rng.gen_range(-40.0..40.0);
