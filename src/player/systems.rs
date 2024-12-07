@@ -1,9 +1,9 @@
 use super::components::*;
-use crate::enemy::components::XP;
-use bevy::ecs::query::QueryManyIter;
-use bevy::math::NormedVectorSpace;
+use crate::enemy::xp::XP;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
+
+const XP_PICK_UP_SPEED: f32 = 500.0;
 
 pub fn spawn_player(
     mut commands: Commands,
@@ -93,16 +93,16 @@ pub fn pick_up_xp(
             let mut xp_position = xp_transform.translation;
             let distance = player_position - xp_position;
             let distance_length = distance.length();
-            let xp_radius = xp.distance_pick_up / 2.0;
+            let xp_radius = xp.size / 2.0;
             let player_radius = player.size / 2.0;
 
             if distance_length < xp_radius + player_radius {
                 let angle_to_player = distance.y.atan2(distance.x);
-                let rotation_offset = (time.elapsed_seconds() * xp.speed).sin();
+                let rotation_offset = (time.elapsed_seconds() * XP_PICK_UP_SPEED).sin();
                 let curved_angle = angle_to_player + rotation_offset;
                 let movement_direction = Vec3::new(curved_angle.cos(), curved_angle.sin(), 0.0);
 
-                xp_position += movement_direction * xp.speed * time.delta_seconds();
+                xp_position += movement_direction * XP_PICK_UP_SPEED * time.delta_seconds();
                 xp_transform.rotation = Quat::from_rotation_z(curved_angle);
                 xp_transform.translation = xp_position;
             }

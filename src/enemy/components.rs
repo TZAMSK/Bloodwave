@@ -1,7 +1,15 @@
+use super::xp::XP;
+use crate::enemy::types::boss::BossEnemy;
+use crate::enemy::types::melee::MeleeEnemy;
+use crate::enemy::types::range::RangeEnemy;
+use crate::enemy::types::support::SupportEnemy;
+use crate::enemy::types::EnemyTypes;
 use bevy::prelude::*;
 
 #[derive(Component)]
 pub struct Enemy {
+    pub enemy_type: EnemyTypes,
+    pub health: f32,
     pub speed: f32,
     pub aggro_range: f32,
     pub xp: XP,
@@ -9,33 +17,23 @@ pub struct Enemy {
     pub size: f32,
 }
 
-#[derive(Component)]
-pub struct XP {
-    pub xp: f32,
-    pub drop_chance: f32,
-    pub distance_pick_up: f32,
-    pub speed: f32,
-}
+impl Enemy {
+    pub fn new(enemy_type: EnemyTypes) -> Self {
+        let (health, speed, aggro_range, size, level, xp) = match &enemy_type {
+            EnemyTypes::Melee(melee) => melee.stats(),
+            EnemyTypes::Range(range) => range.stats(),
+            EnemyTypes::Support(support) => support.stats(),
+            EnemyTypes::Boss(boss) => boss.stats(),
+        };
 
-impl Default for Enemy {
-    fn default() -> Self {
         Self {
-            speed: 200.0,
-            aggro_range: 400.0,
-            xp: XP::default(),
-            level: 1,
-            size: 50.0,
-        }
-    }
-}
-
-impl Default for XP {
-    fn default() -> Self {
-        Self {
-            xp: 5.0,
-            drop_chance: 0.4,
-            distance_pick_up: 50.0,
-            speed: 300.0,
+            enemy_type,
+            health,
+            speed,
+            aggro_range,
+            xp,
+            level,
+            size,
         }
     }
 }
