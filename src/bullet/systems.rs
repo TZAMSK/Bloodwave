@@ -1,5 +1,6 @@
 use super::components::*;
-use crate::enemy::components::{Enemy, XP};
+use crate::enemy::components::Enemy;
+use crate::enemy::xp::XP;
 use crate::player::components::Player;
 use bevy::prelude::*;
 use rand::Rng;
@@ -92,7 +93,11 @@ pub fn bullet_hit_enemy(
                             texture: asset_server.load("sprites/xp.png"),
                             ..default()
                         },
-                        XP { ..default() },
+                        XP {
+                            xp: enemy.xp.xp,
+                            drop_chance: enemy.xp.drop_chance,
+                            size: enemy.xp.size,
+                        },
                     ));
                 }
             }

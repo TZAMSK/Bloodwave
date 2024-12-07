@@ -2,6 +2,8 @@ use crate::player::components::Player;
 use rand::Rng;
 
 use super::components::*;
+use super::types::melee::MeleeEnemy;
+use super::types::EnemyTypes;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
@@ -28,10 +30,10 @@ pub fn spawn_enemy(
                     window.height() / 2.0 - spawn_y,
                     1.0,
                 ),
-                texture: asset_server.load("sprites/hitman.png"),
+                texture: asset_server.load("sprites/spider.png"),
                 ..default()
             },
-            Enemy { ..default() },
+            Enemy::new(EnemyTypes::Melee(MeleeEnemy::Spider)),
         ));
 
         i += 1;
@@ -61,7 +63,7 @@ pub fn enemy_movement(
     }
 }
 
-pub fn check_collision_enemies(mut enemy_query: Query<(&Enemy, &mut Transform)>) {
+pub fn correct_collision_enemies(mut enemy_query: Query<(&Enemy, &mut Transform)>) {
     let mut enemy_data: Vec<(Transform, f32)> = Vec::new();
 
     for (enemy, transform_enemy) in enemy_query.iter() {
