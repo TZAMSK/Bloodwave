@@ -26,18 +26,19 @@ impl Default for Player {
                 shield: 20.0,
                 stamina: 10.0,
             },
-            xp: 100.0,
+            xp: 0.0,
             level: 1,
         }
     }
 }
 
 impl Player {
-    fn update_level(&mut self) {
-        let xp_required_next_level = (self.level as f32) * 1.1;
+    pub fn xp_progress(&mut self) -> f32 {
+        let xp_required_next_level = (self.level as f32) * 100.0 * 1.2;
         if self.xp >= xp_required_next_level {
-            self.xp = xp_required_next_level;
-            self.level += 1
+            self.xp = 0.0;
+            self.level += 1;
         }
+        self.xp / xp_required_next_level
     }
 }

@@ -83,10 +83,10 @@ pub fn player_rotate(
 pub fn pick_up_xp(
     mut commands: Commands,
     mut xp_query: Query<(&XP, Entity, &mut Transform), (With<XP>, Without<Player>)>,
-    player_query: Query<(&mut Player, &Transform), (With<Player>, Without<XP>)>,
+    mut player_query: Query<(&mut Player, &Transform), (With<Player>, Without<XP>)>,
     time: Res<Time>,
 ) {
-    if let Ok((player, player_transform)) = player_query.get_single() {
+    if let Ok((mut player, player_transform)) = player_query.get_single_mut() {
         let player_position = player_transform.translation;
 
         for (xp, xp_entity, mut xp_transform) in xp_query.iter_mut() {
@@ -111,6 +111,7 @@ pub fn pick_up_xp(
 
             if destroy_proximity < 1.0 {
                 commands.entity(xp_entity).despawn();
+                player.xp += xp.xp;
             }
         }
     }
