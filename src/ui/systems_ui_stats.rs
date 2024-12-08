@@ -1,4 +1,3 @@
-use crate::player::components::Player;
 use bevy::prelude::*;
 
 pub fn base_stat_bar_spawn(mut commands: Commands, asset_server: Res<AssetServer>) {
