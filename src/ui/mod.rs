@@ -13,6 +13,7 @@ impl Plugin for UIPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, base_stat_bar_spawn)
             .add_systems(Startup, xp_bar_spawn)
-            .add_systems(Update, update_xp_bar);
+            .add_systems(Update, update_xp_bar)
+            .add_systems(Update, update_level_indicator);
     }
 }

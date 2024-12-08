@@ -1,3 +1,5 @@
+use super::components::LevelIndicator;
+use crate::player::components::Player;
 use bevy::prelude::*;
 
 pub fn base_stat_bar_spawn(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -45,18 +47,24 @@ pub fn base_stat_bar_spawn(mut commands: Commands, asset_server: Res<AssetServer
                         ..default()
                     })
                     .with_children(|frame| {
-                        frame.spawn(TextBundle {
-                            text: Text::from_section(
-                                "?",
-                                TextStyle {
-                                    font: asset_server.load("fonts/Pixel.ttf"),
-                                    font_size: 70.0,
-                                    color: Color::srgb(192.0 / 255.0, 143.0 / 255.0, 88.0 / 255.0),
-                                },
-                            ),
-                            style: Style { ..default() },
-                            ..default()
-                        });
+                        frame
+                            .spawn(TextBundle {
+                                text: Text::from_section(
+                                    "?",
+                                    TextStyle {
+                                        font: asset_server.load("fonts/Pixel.ttf"),
+                                        font_size: 70.0,
+                                        color: Color::srgb(
+                                            192.0 / 255.0,
+                                            143.0 / 255.0,
+                                            88.0 / 255.0,
+                                        ),
+                                    },
+                                ),
+                                style: Style { ..default() },
+                                ..default()
+                            })
+                            .insert(LevelIndicator);
                     });
                 });
 
@@ -112,4 +120,16 @@ pub fn base_stat_bar_spawn(mut commands: Commands, asset_server: Res<AssetServer
                     });
                 });
         });
+}
+
+pub fn update_level_indicator(
+    player_query: Query<&Player>,
+    mut level_indicator_query: Query<&mut Text, With<LevelIndicator>>,
+) {
+    if let Ok(player) = player_query.get_single() {
+        if let Ok(mut level_indicator) = level_indicator_query.get_single_mut() {
+            let level = player.level.to_string();
+            level_indicator.sections[0].value = level
+        }
+    }
 }
