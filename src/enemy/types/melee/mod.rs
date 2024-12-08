@@ -1,3 +1,5 @@
+pub mod movement_systems;
+
 use crate::enemy::xp::XP;
 
 pub enum MeleeEnemy {
