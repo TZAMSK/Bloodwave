@@ -14,6 +14,9 @@ impl Plugin for UIPlugin {
         app.add_systems(Startup, base_stat_bar_spawn)
             .add_systems(Startup, xp_bar_spawn)
             .add_systems(Update, update_xp_bar)
-            .add_systems(Update, update_level_indicator);
+            .add_systems(Update, update_level_indicator)
+            .add_systems(Update, update_health_bar)
+            .add_systems(Update, update_shield_bar)
+            .add_systems(Update, update_stamina_bar);
     }
 }
