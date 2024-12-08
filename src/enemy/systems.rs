@@ -7,7 +7,7 @@ use super::types::EnemyTypes;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
-const NUMBER_ENEMIES: u32 = 19;
+const NUMBER_ENEMIES: u32 = 29;
 
 pub fn spawn_enemy(
     mut commands: Commands,
