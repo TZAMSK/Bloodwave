@@ -3,6 +3,7 @@ mod camera;
 mod enemy;
 mod player;
 mod systems;
+mod ui;
 mod world;
 
 use bevy::prelude::*;
@@ -11,6 +12,7 @@ use camera::CameraPlugin;
 use enemy::EnemyPlugin;
 use player::PlayerPlugin;
 use systems::*;
+use ui::UIPlugin;
 use world::WorldPlugin;
 
 fn main() {
@@ -28,6 +30,7 @@ fn main() {
         .add_plugins(CameraPlugin)
         .add_plugins(BulletPlugin)
         .add_plugins(EnemyPlugin)
+        .add_plugins(UIPlugin)
         .add_systems(Update, exit_game)
         .run();
 }

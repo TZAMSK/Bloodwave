@@ -7,7 +7,7 @@ use super::types::EnemyTypes;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
-const NUMBER_ENEMIES: u32 = 4;
+const NUMBER_ENEMIES: u32 = 19;
 
 pub fn spawn_enemy(
     mut commands: Commands,
@@ -30,7 +30,7 @@ pub fn spawn_enemy(
                     window.height() / 2.0 - spawn_y,
                     1.0,
                 ),
-                texture: asset_server.load("sprites/spider.png"),
+                texture: asset_server.load("sprites/enemies/spider.png"),
                 ..default()
             },
             Enemy::new(EnemyTypes::Melee(MeleeEnemy::Spider)),
