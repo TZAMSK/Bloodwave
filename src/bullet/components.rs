@@ -10,7 +10,7 @@ impl Default for Bullet {
     fn default() -> Self {
         Self {
             size: 20.0,
-            speed: 2000.0,
+            speed: 1900.0,
         }
     }
 }
